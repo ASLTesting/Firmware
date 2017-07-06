@@ -126,7 +126,7 @@ MavlinkReceiver::MavlinkReceiver(Mavlink *parent) :
 	_pos_sp_triplet_pub(nullptr),
 	_att_pos_mocap_pub(nullptr),
 	_vision_position_pub(nullptr),
-    _vision_attitude_pub(nullptr),
+	_vision_attitude_pub(nullptr),
 	_telemetry_status_pub(nullptr),
 	_rc_pub(nullptr),
 	_manual_pub(nullptr),
@@ -1097,7 +1097,7 @@ MavlinkReceiver::handle_message_attitude_quaternion_cov(mavlink_message_t *msg)
 
 	struct vehicle_attitude_s vision_attitude = {};
 
-    vision_attitude.timestamp = sync_stamp(hrt_abstime);
+	vision_attitude.timestamp = sync_stamp(att.time_usec);
 
 	vision_attitude.q[0] = att.q[0];
 	vision_attitude.q[1] = att.q[1];
