@@ -1,6 +1,7 @@
 #include "../BlockLocalPositionEstimator.hpp"
 #include <systemlib/mavlink_log.h>
 #include <matrix/math.hpp>
+#include <drivers/drv_hrt.h>
 
 extern orb_advert_t mavlink_log_pub;
 
@@ -13,6 +14,9 @@ static const uint32_t 		REQ_VISION_INIT_COUNT = 1;
 // this will throw away a correction before it starts using the data so we
 // set the timeout to 0.5 seconds
 static const uint32_t 		VISION_TIMEOUT =    500000;	// 0.5 s
+
+//Patrick change: only print every [counter] messages
+uint32_t printCounter = 0;
 
 void BlockLocalPositionEstimator::visionInit()
 {
@@ -59,6 +63,16 @@ int BlockLocalPositionEstimator::visionMeasure(Vector<float, n_y_vision> &y)
 	y(Y_vision_z) = _sub_vision_pos.get().z;
 	_visionStats.update(y);
 	_time_last_vision_p = _sub_vision_pos.get().timestamp;
+    //Patrick change: print time difference between topic timestamp and current time to test latency
+    if(printCounter++%300==0){
+
+        //uint64_t difference = hrt_absolute_time() - _time_last_vision_p;
+
+
+        mavlink_log_critical(&mavlink_log_pub, "[lpe] delta:current time-timestamp= %5.6f ms", double(hrt_absolute_time() - _time_last_vision_p)/1000);
+        printCounter=0;
+    }
+
 	return OK;
 }
 
